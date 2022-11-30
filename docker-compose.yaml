@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+        camera:
+                image: rliebert/jetson_galactic:opencv_4.4
+                volumes:
+                        - /dev/video0:/dev/video0
+                        - /tmp/.X11-unix/:/tmp/.X11-unix/
+                        - /tmp/argus_socket:/tmp/argus_socket
+                network_mode: "host"
+                environment:
+                        - NVIDIA_VISIBLE_DEVICES=all
+                        - NVIDIA_DRIVER_CAPABILITIES=all
+                runtime: nvidia
+                privileged: true
+                command: "python3 /fusion_ws/scr/pi_cam_v2_pub.py"
+        box_detection:
+                image: rliebert/jetson_galactic:opencv_4.4
+                depends_on:
+                        - camera
+                network_mode: "host"
+                runtime: nvidia
+                privileged: true
+                command: "python3 /fusion_ws/scr/box_detection.py"
+        uros_agent:
+                image: microros/micro-ros-agent:galactic
+                network_mode: "host"
+                runtime: nvidia
+                command: "udp4 -p 8888"
+        imu_node:
+                image: rliebert/galactic_uros:latest
+                depends_on:
+                        - box_detection
+                        - uros_agent
+                network_mode: "host"
+                runtime: nvidia
+                command: "python3 /uros_ws/src/imu_node.py"
+        fusion_node:
+                image: rliebert/jetson_galactic:latest
+                depends_on:
+                        - imu_node
+                        - box_detection
+                network_mode: "host"
+                runtime: nvidia
+                command: "python3 /fusion_ws/scr/fusion.py"
+        logger:
+                image: rliebert/jetson_galactic:latest
+                depends_on:
+                        - fusion_node
+                network_mode: "host"
+                runtime: nvidia
+                command: "python3 /fusion_ws/scr/export_to_csv.py"
