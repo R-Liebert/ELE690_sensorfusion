@@ -1,4 +1,4 @@
-# Sesnorfusion using ROS2 and MicroROS 
+# Sensorfusion using ROS2 and MicroROS 
 
 In this project NVIDIA Jetson Nano 2GB and Arduino Nano RP2040 Connect is used. The scripts are unfinished as there is issues with initializing camerastream from Pi Camera Module V2 with docker on the Jetson Nano
 
