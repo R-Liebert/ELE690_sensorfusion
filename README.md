@@ -6,3 +6,4 @@ The goal of the project is to use a kalmannfilter to verify the position of an o
 To get the IMU data, microROS is used on the Arduino to publish to the \IMU topic using WiFi. This can be found in the ino-file.
 
 As this code was just meant to be used in a report it's not intended for stand-alone use, and the results are just exported to a csv-file for logging purposes.
+
